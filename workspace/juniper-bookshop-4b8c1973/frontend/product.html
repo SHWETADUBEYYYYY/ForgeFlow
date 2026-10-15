@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Juniper Books</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><a href="/">Juniper Books</a></h1>
+            <nav>
+                <ul>
+                    <li><a href="/cart">Cart (<span id="cart-count">0</span>)</a></li>
+                    <li id="auth-links">
+                        <a href="/login">Login</a>
+                        <a href="/register">Register</a>
+                    </li>
+                    <li id="user-menu" style="display: none;">
+                        <span id="username-display"></span>
+                        <a href="/orders">My Orders</a>
+                        <button id="logout-button" class="link-button">Logout</button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="product-detail">
+            <div class="product-image-container">
+                <img id="product-image" src="" alt="Product Image">
+            </div>
+            <div class="product-info">
+                <h2 id="product-title"></h2>
+                <p class="product-author" id="product-author"></p>
+                <p class="product-price" id="product-price"></p>
+                <p class="product-description" id="product-description"></p>
+                <div class="add-to-cart-section">
+                    <input type="number" id="quantity-input" value="1" min="1" class="quantity-input">
+                    <button id="add-to-cart-button" class="button primary">Add to Cart</button>
+                </div>
+                <p id="error-message" class="error-message" style="display: none;"></p>
+                <p id="success-message" class="success-message" style="display: none;"></p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Juniper Books</p>
+        </div>
+    </footer>
+
+    <script src="/static/js/utils.js"></script>
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/products.js"></script>
+</body>
+</html>

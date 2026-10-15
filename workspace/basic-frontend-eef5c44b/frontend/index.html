@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{{ pencil.name }}</title>
+<style>
+  :root {
+    --bg: #f4f1ea;
+    --card: #ffffff;
+    --ink: #2b2b2b;
+    --muted: #6b6b6b;
+    --accent: #f2b705;
+    --wood: #e8b04b;
+    --wood-dark: #c98f2e;
+    --graphite: #3a3a3a;
+    --eraser: #f28b82;
+    --ferrule: #b8b8b8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+  .wrap {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  h1 {
+    font-size: 1.6rem;
+    margin: 0;
+    text-align: center;
+  }
+  .stage {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 2.5rem 1rem;
+    display: flex;
+    justify-content: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  }
+  /* CSS-drawn pencil: eraser, ferrule, body, tip, lead */
+  .pencil {
+    display: flex;
+    align-items: center;
+    transform: rotate(-8deg);
+  }
+  .eraser {
+    width: 26px;
+    height: 34px;
+    background: var(--eraser);
+    border-radius: 6px 0 0 6px;
+  }
+  .ferrule {
+    width: 16px;
+    height: 34px;
+    background: linear-gradient(90deg, #9e9e9e, var(--ferrule), #9e9e9e);
+  }
+  .body {
+    width: 220px;
+    height: 34px;
+    background: linear-gradient(180deg, var(--wood), var(--wood-dark));
+    position: relative;
+  }
+  .body::after {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0; left: 50%;
+    width: 2px;
+    background: rgba(0,0,0,0.08);
+  }
+  .tip {
+    width: 0;
+    height: 0;
+    border-top: 17px solid transparent;
+    border-bottom: 17px solid transparent;
+    border-left: 34px solid var(--wood);
+  }
+  .lead {
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 12px solid var(--graphite);
+    margin-left: -2px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  }
+  .card h2 {
+    margin: 0 0 1rem;
+    font-size: 1.2rem;
+  }
+  dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 0.6rem 1rem;
+  }
+  dt { color: var(--muted); font-weight: 600; }
+  dd { margin: 0; }
+  .desc {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  @media (max-width: 480px) {
+    .body { width: 140px; }
+    dl { grid-template-columns: 1fr; gap: 0.2rem 0; }
+    dt { margin-top: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>{{ pencil.name }}</h1>
+
+    <section class="stage" aria-label="Illustration of a pencil">
+      <div class="pencil" role="img" aria-label="A yellow pencil with a pink eraser">
+        <div class="eraser"></div>
+        <div class="ferrule"></div>
+        <div class="body"></div>
+        <div class="tip"></div>
+        <div class="lead"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Pencil Information</h2>
+      <dl>
+        <dt>Name</dt><dd>{{ pencil.name }}</dd>
+        <dt>Type</dt><dd>{{ pencil.type }}</dd>
+        <dt>Hardness</dt><dd>{{ pencil.hardness }}</dd>
+        <dt>Length</dt><dd>{{ pencil.length }}</dd>
+        <dt>Material</dt><dd>{{ pencil.material }}</dd>
+      </dl>
+      <p class="desc">{{ pencil.description }}</p>
+    </section>
+  </main>
+</body>
+</html>

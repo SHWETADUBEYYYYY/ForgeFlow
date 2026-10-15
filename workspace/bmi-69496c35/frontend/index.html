@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wellform · BMI Calculator</title>
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#233e36;background:#f6f7f2;font-synthesis:none}*{box-sizing:border-box}body{margin:0}header{max-width:1120px;margin:auto;padding:30px 32px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #dce3d9}.brand{font-size:23px;font-weight:750;letter-spacing:-1px;display:flex;align-items:center;gap:10px}.mark{background:#244e40;color:white;border-radius:12px;padding:6px 10px;letter-spacing:0}.header-note{font-size:12px;color:#65756b}main{max-width:1000px;margin:64px auto 48px;padding:0 28px}.eyebrow{font-size:11px;font-weight:bold;letter-spacing:2px;color:#537b51;text-transform:uppercase}h1{font-size:48px;letter-spacing:-2px;line-height:1.1;margin:16px 0} .intro{color:#66756c;line-height:1.7;max-width:550px;font-size:16px;margin:0 0 34px}.layout{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:start}.calculator{background:white;border:1px solid #e0e5dd;border-radius:20px;padding:30px;box-shadow:0 8px 30px #233e3605}h2{font-size:20px;letter-spacing:-.5px;margin:0 0 10px}.sub{font-size:13px;color:#748078;line-height:1.6;margin:0 0 26px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:18px}label{display:block;font-size:13px;font-weight:bold;margin-bottom:10px}.input-wrap{position:relative}input{width:100%;border:1px solid #d5dfd5;border-radius:9px;padding:16px 42px 16px 14px;background:#fafbf8;color:#233e36;font:inherit;font-size:18px}input::placeholder{color:#a0aba1}.unit{position:absolute;right:14px;top:19px;font-size:13px;color:#778479}input:focus{outline:2px solid #5c8654;outline-offset:2px}button{border:0;border-radius:9px;padding:17px 20px;background:#28533f;color:white;font:inherit;font-size:14px;font-weight:bold;width:100%;margin-top:24px;cursor:pointer;display:flex;justify-content:space-between}button:hover{background:#1a3d2b}button:focus-visible{outline:3px solid #96b96e;outline-offset:3px}button:disabled{opacity:.7;cursor:wait}.privacy{color:#869086;font-size:11px;text-align:center;margin:17px 0 0}.guide{background:#edf1e5;border:1px solid #e0e6d7;border-radius:20px;padding:30px}.guide .sub{margin-bottom:20px}.range{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:15px 0;border-top:1px solid #dbe2d2;font-size:13px}.range-label{display:flex;align-items:center;gap:10px}.dot{width:8px;height:8px;border-radius:50%;background:var(--tone);flex-shrink:0}.threshold{color:#71806a;font-size:12px}.guide-note{font-size:11px;color:#798571;margin:14px 0 0}.notice{display:flex;gap:12px;margin:28px 0 0;font-size:12px;line-height:1.7;color:#748071;max-width:860px}.notice strong{color:#4c604d}.notice-icon{flex-shrink:0;border:1px solid #a4b29b;border-radius:50%;width:18px;height:18px;line-height:17px;text-align:center;margin-top:2px}footer{max-width:1120px;border-top:1px solid #dce3d9;margin:55px auto 0;padding:22px 32px;display:flex;justify-content:space-between;font-size:11px;color:#87917f}.result{margin-top:24px;padding:22px;background:#eef5e8;border-radius:12px}.result-top{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#63815a}.result-number{font-size:50px;font-weight:bold;letter-spacing:-2px;margin:7px 0}.category{font-size:14px;font-weight:bold}.result-caption{font-size:12px;color:#6a7c61;line-height:1.6;margin-bottom:0}.error{color:#9c3c2f;font-size:13px;background:#fff2ef;padding:12px;border-radius:8px;line-height:1.5;margin-top:20px}[hidden]{display:none!important}@media(max-width:650px){header{padding:22px}.header-note{font-size:10px}main{margin-top:38px;padding:0 20px}h1{font-size:38px}.layout{grid-template-columns:1fr}.calculator,.guide{padding:24px}.fields{gap:12px}footer{margin-top:36px;padding:20px;gap:15px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><span class="mark" aria-hidden="true">w.</span>wellform</div><span class="header-note">A little clarity. A healthier you.</span></header>
+<main>
+<div class="eyebrow">Know your numbers</div>
+<h1>A small step to<br>understanding your health.</h1>
+<p class="intro">Find your body mass index with a simple calculation.<br>Start with your height and weight — we’ll do the rest.</p>
+<div class="layout">
+<section class="calculator" aria-labelledby="calculator-title">
+<h2 id="calculator-title">BMI calculator</h2><p class="sub">Enter your measurements in metric units.</p>
+<form id="bmi-form" novalidate>
+<div class="fields">
+<div><label for="height">Height</label><div class="input-wrap"><input id="height" name="height_cm" type="number" step="any" min="0" inputmode="decimal" placeholder="170" aria-label="Height (cm)" aria-describedby="error" required><span class="unit" aria-hidden="true">cm</span></div></div>
+<div><label for="weight">Weight</label><div class="input-wrap"><input id="weight" name="weight_kg" type="number" step="any" min="0" inputmode="decimal" placeholder="65" aria-label="Weight (kg)" aria-describedby="error" required><span class="unit" aria-hidden="true">kg</span></div></div>
+</div>
+<button id="calculate" type="submit"><span>Calculate BMI</span><span aria-hidden="true">↗</span></button>
+<div id="error" class="error" role="alert" hidden></div>
+</form>
+<div id="result" class="result" role="status" aria-live="polite" hidden><div class="result-top">Your body mass index</div><div id="bmi-value" class="result-number"></div><div id="bmi-category" class="category"></div><p class="result-caption">One number, not the whole picture. Consider this alongside your overall health.</p></div>
+<p class="privacy">No sign-up. Your measurements aren’t stored.</p>
+</section>
+<aside class="guide" aria-labelledby="guide-title"><h2 id="guide-title">Understanding your BMI</h2><p class="sub">A quick guide to the adult BMI ranges.</p>
+<div class="range"><span class="range-label"><span class="dot" style="--tone:#85aeba"></span>Underweight</span><span class="threshold">Below 18.5</span></div>
+<div class="range"><span class="range-label"><span class="dot" style="--tone:#769a55"></span>Normal weight</span><span class="threshold">18.5 – &lt; 25</span></div>
+<div class="range"><span class="range-label"><span class="dot" style="--tone:#c7a351"></span>Overweight</span><span class="threshold">25 – &lt; 30</span></div>
+<div class="range"><span class="range-label"><span class="dot" style="--tone:#bc7d61"></span>Obesity</span><span class="threshold">30 and above</span></div>
+<p class="guide-note">BMI = weight (kg) ÷ height (m)²</p>
+</aside>
+</div>
+<div class="notice"><span class="notice-icon" aria-hidden="true">i</span><div><strong>A guide, not a diagnosis.</strong> BMI is an adult screening estimate and doesn’t account for muscle mass or individual differences. It is not intended for children or pregnancy. Talk with a healthcare professional for personalized advice.</div></div>
+</main>
+<footer><span>wellform · Everyday health, made simple.</span><span>For awareness. For you.</span></footer>
+<script>
+const form = document.getElementById('bmi-form');
+const inputs = [document.getElementById('height'), document.getElementById('weight')];
+const result = document.getElementById('result');
+const error = document.getElementById('error');
+const button = document.getElementById('calculate');
+let revision = 0;
+function clearFeedback() {
+  result.hidden = true;
+  error.hidden = true;
+  inputs.forEach(input => input.removeAttribute('aria-invalid'));
+}
+inputs.forEach(input => input.addEventListener('input', () => {
+  revision++;
+  clearFeedback();
+}));
+form.addEventListener('submit', async event => {
+  event.preventDefault();
+  clearFeedback();
+  const submission = ++revision;
+  const invalid = inputs.filter(input => !input.value.trim() || !Number.isFinite(Number(input.value)) || Number(input.value) <= 0);
+  if (invalid.length) {
+    invalid.forEach(input => input.setAttribute('aria-invalid', 'true'));
+    error.textContent = 'Please enter a positive number for both height (cm) and weight (kg).';
+    error.hidden = false;
+    invalid[0].focus();
+    return;
+  }
+  button.disabled = true;
+  try {
+    const response = await fetch('/api/bmi', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({height_cm: Number(inputs[0].value), weight_kg: Number(inputs[1].value)})
+    });
+    if (!response.ok) throw new Error(response.status === 422 ? 'Please check your measurements. These values cannot be calculated.' : 'Unable to calculate right now. Please try again.');
+    const data = await response.json();
+    if (submission !== revision) return;
+    document.getElementById('bmi-value').textContent = data.bmi.toFixed(1);
+    document.getElementById('bmi-category').textContent = data.category;
+    result.hidden = false;
+  } catch (failure) {
+    if (submission !== revision) return;
+    error.textContent = failure instanceof TypeError ? 'Connection interrupted. Please try again.' : failure.message;
+    error.hidden = false;
+  } finally {
+    button.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

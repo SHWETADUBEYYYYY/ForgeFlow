@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#e6ff42">
+<title>Air Studio / Nike-inspired concept</title>
+<style>
+/* Shared primitives; composition and responsive changes follow below. */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible{outline:3px solid #5766df;outline-offset:6px}
+header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid}
+.brand{font-weight:900;letter-spacing:-1.5px;display:flex;gap:10px;align-items:center;white-space:nowrap}
+.brand-mark{display:block;width:32px;height:23px;background:var(--ink);clip-path:polygon(0 100%,40% 0,66% 0,44% 61%,76% 61%,100% 100%)}
+nav{display:flex;gap:36px;font-size:12px;font-weight:700}
+nav a:hover{text-decoration:underline;text-underline-offset:5px}
+.edition{font-size:11px}
+.hero{position:relative;max-width:1600px;margin:auto}
+.eyebrow{font-weight:700;display:flex;align-items:center;gap:9px}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+h1{font-weight:900}h1 span{display:block}
+.intro{line-height:1.7}
+.cta{display:inline-flex;align-items:center;background:var(--ink);color:white;font-size:12px;font-weight:700}
+.cta:hover{background:#3c4835}.cta span{font-size:22px;line-height:14px}
+.shoe-upper{fill:var(--shoe);transition:fill .35s}.shoe-shade,.shaded-panel{fill:var(--shoe-dark);transition:fill .35s}
+.art-label{position:absolute;display:flex;align-items:center;gap:14px}
+.art-label:before{content:'';height:1px}
+.hero-bottom{display:flex;justify-content:space-between;align-items:end;gap:16px}
+.color-title{font-size:10px;letter-spacing:1.5px;margin-bottom:14px}
+.color-title strong{letter-spacing:0;margin-left:9px;font-size:11px}
+.swatches{display:flex}.swatch{border-radius:50%;border:5px solid var(--paper);outline:1px solid #a3a799;background:var(--swatch)}
+.swatch[aria-pressed=true]{outline:2px solid var(--ink)}
+.serial{font-size:10px;letter-spacing:2px}
+.scroll-link{font-size:11px;display:flex;gap:16px;align-items:center;min-height:44px}
+.ticker{display:flex;justify-content:space-between;gap:20px;overflow:hidden;font-weight:900;white-space:nowrap}
+.details{max-width:1600px;margin:auto;scroll-margin-top:25px}
+.details-heading{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:40px}
+h2{font-size:clamp(35px,4vw,58px);letter-spacing:-2.5px;line-height:1;margin:15px 0 0}
+.details-heading p{font-size:13px;max-width:260px;line-height:1.7;color:#606759}
+.cards{display:grid;grid-template-columns:repeat(3,1fr)}
+.card{border-top:1px solid #bfc3b6}.card-num{font-size:11px;color:#697060}
+.card h3{letter-spacing:-.7px;margin:24px 0 12px}
+.card p{color:#606759;line-height:1.75;max-width:320px}
+.card-icon{float:right;font-size:28px}
+footer{padding-block:26px;border-top:1px solid #d7d9cd;display:flex;align-items:center;justify-content:space-between;gap:25px;font-size:10px;color:#697060}
+footer p{max-width:600px;line-height:1.6;margin:0}
+/* Copy and artwork have separate tracks, so neither relies on overlap. */
+:root{--paper:#f4f3ef;--ink:#242622;--lime:#d6e77f;--shoe:#dcf348;--shoe-dark:#a2b72f}
+header{height:88px;padding-inline:6%;border-color:#ddded6}.brand{font-size:20px}.edition{border:0;color:#666b60;letter-spacing:1.5px}
+.hero{display:grid;grid-template-columns:40% 60%;grid-template-rows:auto auto auto auto 1fr;min-height:690px;padding:62px 6% 36px;overflow:visible}
+.eyebrow{font-size:10px;color:#62685c;letter-spacing:1.8px}.dot{background:#829843}
+.hero>.eyebrow{grid-column:1;grid-row:1}h1{grid-column:1;grid-row:2;font-size:clamp(52px,6.2vw,92px);line-height:.98;letter-spacing:-.065em;margin:30px 0 24px;z-index:auto}.outline{-webkit-text-stroke:0;color:#727967}
+.intro{grid-column:1;grid-row:3;margin:0;max-width:290px;color:#62675e;font-size:14px}.cta{grid-column:1;grid-row:4;justify-self:start;margin-top:26px;padding:18px 23px;border-radius:30px;gap:30px}
+.art{grid-column:2;grid-row:1/5;position:relative;inset:auto;width:100%;height:auto;min-width:0;align-self:center;aspect-ratio:1.45;background:radial-gradient(ellipse at 54% 48%,#fff 0%,#e7e7df 47%,transparent 71%)}
+.shoe{display:block;width:100%;height:100%;transform:rotate(-8deg);filter:none;animation:studio-arrive .8s ease-out}.art-label{right:6%;bottom:0;color:#72776c;font-size:8px;letter-spacing:1.5px}.art-label:before{background:#a0a496;width:28px}
+.hero-bottom{grid-column:1/-1;grid-row:5;margin-top:48px;padding-top:24px;border-top:1px solid #d9dbd1;z-index:auto}.swatches{gap:14px}.swatch{width:32px;height:32px}.swatch:focus-visible{outline:3px solid #5766df;outline-offset:5px}.serial{color:#767b70}.color-title{color:#676e5e}.color-title strong{color:var(--ink)}
+.ticker{background:#e9ebdf;border-block:1px solid #d9dbd1;font-size:12px;letter-spacing:1px;padding:22px 6%;color:#5b6351}.ticker b{font-size:15px;color:#839548}.details{padding:80px 6%}.cards{gap:32px}.card{padding:25px 0 0}.card-icon{color:#7a8567}.card h3{font-size:22px}.card p{font-size:14px}footer{padding-inline:6%}.shoe-upper,.shoe-shade{stroke:none}svg path[stroke="#aaba51"],svg path[stroke="#839636"],svg path[stroke="#5c6c30"]{stroke:var(--shoe-dark)}.material-light{pointer-events:none}.upper-tone{stop-color:var(--shoe)}.upper-shadow{stop-color:var(--shoe-dark)}
+/* Editorial spacing and a horizontal floor keep the object grounded. */
+.art{background:radial-gradient(ellipse at 48% 42%,#fff9 0%,#e7e7df55 48%,transparent 70%)}
+.shoe{transform:none;animation:none}
+h1{font-weight:800}.outline{color:#656d5d}
+.intro{max-width:275px}.art-label{letter-spacing:1.8px}
+/* Keep seams subordinate to broad material lighting, not inked contours. */
+.shoe path[stroke="#a6ad8b"]{stroke:#a6ad8b;stroke-opacity:.35;stroke-width:1}
+.shoe path[stroke="#839636"]{stroke-opacity:.38;stroke-width:2}
+.shoe g[stroke="#697455"]{stroke-opacity:.45;stroke-width:2}
+.shoe g[stroke-dasharray="2 3"]{stroke-opacity:.32}
+.hero>h1{min-width:0}
+.cta{box-shadow:0 4px 10px #2426220a}
+.art-label{line-height:1.5}
+@keyframes studio-arrive{from{opacity:.4;transform:translateY(12px) rotate(-8deg)}to{opacity:1;transform:rotate(-8deg)}}
+@media(min-width:1500px){.hero{min-height:750px}.art{height:auto}}
+@media(max-width:900px){.edition{display:none}.hero{min-height:630px;padding-top:48px;grid-template-columns:43% 57%}h1{font-size:clamp(48px,6.5vw,64px)}.intro{max-width:245px;font-size:13px}.hero-bottom{margin-top:40px}.serial{display:none}}
+@media(max-width:600px){.details-heading{display:block}.details-heading p{margin-top:23px}.cards{grid-template-columns:1fr}.card p{max-width:none}.ticker span:last-child{display:none}footer .brand{display:none}header{height:68px}.brand{font-size:17px;letter-spacing:-1px}.brand-mark{width:24px;height:19px}nav{gap:15px;font-size:10px}.hero{display:flex;flex-direction:column;min-height:0;padding:26px 6% 24px}.hero>.eyebrow{font-size:8px;letter-spacing:1.3px}h1{font-size:clamp(49px,14vw,70px);margin:20px 0 0;line-height:.96}.art{order:0;width:100%;height:auto;aspect-ratio:1.75;margin:8px 0 15px;inset:auto;align-self:center}.art-label{bottom:0;right:2%;font-size:7px;letter-spacing:1px}.intro{font-size:12px;line-height:1.6;max-width:100%;margin:0}.intro br{display:none}.cta{align-self:start;margin-top:18px;padding:15px 21px;font-size:11px}.hero-bottom{width:100%;margin-top:24px;padding-top:18px}.color-title{font-size:8px;margin-bottom:12px}.color-title strong{font-size:10px}.swatch{width:36px;height:36px}.scroll-link{font-size:10px;letter-spacing:.5px;gap:8px}.ticker{font-size:9px;padding:17px 6%;gap:15px}.ticker b{font-size:12px}.details{padding:48px 6%}.cards{gap:24px}footer{flex-wrap:wrap}footer p{flex-basis:100%}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header><a class="brand" href="#home" aria-label="Air Studio home"><span class="brand-mark" aria-hidden="true"></span>AIR / STUDIO</a><nav aria-label="Main navigation"><a href="#home">The concept</a><a href="#details">The details ↗</a></nav><span class="edition">DESIGN SERIES — 001</span></header>
+<main>
+<section class="hero" id="home" aria-labelledby="headline">
+<div class="eyebrow"><span class="dot"></span> NIKE-INSPIRED / AIR CONCEPT 01</div>
+<h1 id="headline"><span>LESS RULES.</span><span class="outline">MORE AIR.</span></h1>
+<div class="art">
+
+<svg class="shoe" viewBox="0 0 850 520" role="img" aria-labelledby="shoe-title shoe-description">
+<title id="shoe-title">Volt lime concept sneaker</title><desc id="shoe-description">Original dimensional sneaker illustration, not product photography: woven mesh, stitched overlays, braided laces, a padded collar, and a sculpted air sole in soft studio lighting.</desc>
+<defs>
+<linearGradient id="sole" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fffef7"/><stop offset=".28" stop-color="#f0f0e7"/><stop offset=".68" stop-color="#dbddd1"/><stop offset="1" stop-color="#afb5a5"/></linearGradient>
+<linearGradient id="rubber" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#667062"/><stop offset=".45" stop-color="#41493f"/><stop offset="1" stop-color="#272f28"/></linearGradient>
+<linearGradient id="upper-light" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffffff" stop-opacity=".5"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+<radialGradient id="upper-material" cx=".42" cy=".18" r=".85" gradientTransform="translate(0 .05) scale(1 .9)"><stop stop-color="#fff" stop-opacity=".65"/><stop offset=".35" class="upper-tone" stop-opacity=".08"/><stop offset=".7" class="upper-shadow" stop-opacity=".32"/><stop offset="1" stop-color="#182014" stop-opacity=".72"/></radialGradient>
+<radialGradient id="tongue-light" cx=".45" cy=".25" r=".85"><stop stop-color="#fff" stop-opacity=".38"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#172014" stop-opacity=".5"/></radialGradient>
+<linearGradient id="panel-material" x1="0" y1="0" x2="1" y2=".7"><stop stop-color="#fff" stop-opacity=".45"/><stop offset=".5" class="upper-tone" stop-opacity=".1"/><stop offset="1" stop-color="#172014" stop-opacity=".6"/></linearGradient>
+<radialGradient id="contact"><stop stop-color="#30332a" stop-opacity=".27"/><stop offset="1" stop-color="#30332a" stop-opacity="0"/></radialGradient>
+<!-- Small, low-contrast knit lets the broad lighting describe the volume. -->
+<pattern id="mesh" width="4" height="6" patternUnits="userSpaceOnUse"><path d="M1 1Q3 2 1 4" fill="none" stroke="#263019" stroke-opacity=".12" stroke-width=".6"/></pattern>
+<radialGradient id="collar-depth" cx=".38" cy=".15" r=".85"><stop stop-color="#74776b"/><stop offset=".48" stop-color="#353a31"/><stop offset="1" stop-color="#151b17"/></radialGradient>
+<linearGradient id="collar-rim" x1="0" y1="0" x2=".3" y2="1"><stop stop-color="#fffff2" stop-opacity=".65"/><stop offset=".45" class="upper-tone"/><stop offset="1" class="upper-shadow"/></linearGradient>
+<radialGradient id="toe-volume" cx=".36" cy=".22" r=".8"><stop stop-color="#fffff8" stop-opacity=".5"/><stop offset=".45" stop-color="#fff" stop-opacity=".08"/><stop offset="1" stop-color="#263023" stop-opacity=".32"/></radialGradient>
+<linearGradient id="air-glass" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f8faf3"/><stop offset=".35" stop-color="#a3afa4"/><stop offset=".65" stop-color="#56665b"/><stop offset="1" stop-color="#c6d1bf"/></linearGradient>
+<pattern id="lace-weave" width="4" height="4" patternUnits="userSpaceOnUse"><path d="M0 0L4 4M-2 2L2 6" stroke="#73786b" stroke-opacity=".45" stroke-width=".65"/></pattern>
+</defs>
+<ellipse cx="433" cy="422" rx="342" ry="35" fill="url(#contact)"/>
+<ellipse cx="440" cy="415" rx="287" ry="12" fill="url(#contact)"/>
+<path d="M109 335 Q96 360 116 384 Q201 427 365 421 L695 404 Q759 397 770 365 L756 340Z" fill="url(#rubber)"/>
+<path d="M108 321 Q91 347 108 368 Q172 408 361 405 L699 390 Q754 386 773 354 L762 325 Q621 332 532 315Z" fill="url(#sole)" stroke="#a6ad8b" stroke-width="2"/>
+<path d="M122 360 Q231 391 388 379 L713 366" fill="none" stroke="#b3baa0" stroke-width="3"/>
+<path d="M538 357 Q582 343 686 345 Q715 345 715 359 Q715 371 683 373 L563 377 Q534 377 538 357Z" fill="#596449"/>
+<path d="M553 357 Q610 348 681 352 Q703 353 697 362 Q650 371 562 370 Q550 369 553 357Z" fill="url(#air-glass)"/><path d="M585 355Q581 362 585 368 M622 353Q618 360 622 367 M659 352Q655 358 659 365" fill="none" stroke="#d0d7c8" stroke-width="4"/><path d="M561 357Q619 351 686 355" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="2"/>
+<path class="shoe-upper" d="M109 321 Q121 288 166 273 L293 235 Q355 209 401 163 L470 118 Q498 101 511 119 L548 170 Q590 193 628 174 L691 145 Q711 137 720 161 L735 235 Q752 268 760 325 Q701 353 546 337 Q458 331 380 348 Q224 372 109 337Z" stroke="#536333" stroke-width="2"/>
+<path d="M109 321 Q121 288 166 273 L293 235 Q355 209 401 163 L470 118 Q498 101 511 119 L548 170 Q590 193 628 174 L691 145 Q711 137 720 161 L735 235 Q752 268 760 325 Q701 353 546 337 Q458 331 380 348 Q224 372 109 337Z" fill="url(#mesh)"/>
+<path class="material-light" d="M109 321 Q121 288 166 273 L293 235 Q355 209 401 163 L470 118 Q498 101 511 119 L548 170 Q590 193 628 174 L691 145 Q711 137 720 161 L735 235 Q752 268 760 325 Q701 353 546 337 Q458 331 380 348 Q224 372 109 337Z" fill="url(#upper-material)"/>
+<path class="shoe-shade" d="M625 179 L690 145 Q711 137 720 161 L735 235 L755 302 L691 322 L661 249Z"/>
+<!-- A lit rear lip surrounds a dark well; the front bolster overlaps it. -->
+<path d="M543 174 Q563 187 595 180 Q645 165 684 149 Q707 139 717 162 L724 210 Q687 231 643 213 L573 211Z" fill="url(#collar-rim)"/>
+<path d="M557 181 Q591 199 648 174 Q687 155 699 163 Q710 175 709 198 Q678 215 645 201 Q604 211 575 198Z" fill="url(#collar-depth)"/>
+<path d="M557 192 Q595 213 640 197 Q674 208 711 193 L718 214 Q680 239 642 215 Q591 226 563 209Z" class="shaded-panel"/>
+<path d="M557 192 Q595 213 640 197 Q674 208 711 193 L718 214 Q680 239 642 215 Q591 226 563 209Z" fill="url(#panel-material)"/>
+<path d="M565 192 Q596 209 638 194 M652 174 Q683 159 697 163" fill="none" stroke="#fffef0" stroke-opacity=".48" stroke-width="3" stroke-linecap="round"/>
+<path class="shaded-panel" d="M292 235 Q369 207 413 154 L475 120 Q491 111 497 128 L522 194 L445 244 L351 282Z"/>
+<path d="M292 235 Q369 207 413 154 L475 120 Q491 111 497 128 L522 194 L445 244 L351 282Z" fill="url(#tongue-light)"/>
+<path d="M413 157 L475 119 Q491 111 497 128 L511 171 L455 193Z" fill="#242e21"/>
+<path d="M466 142 L488 136 M461 150 L491 142" stroke="#eeefdf" stroke-width="3"/>
+<path d="M113 320 Q134 291 205 281 Q262 269 302 270 Q324 273 336 290 Q277 311 266 348 Q175 358 113 334 Q108 329 113 320Z" fill="url(#toe-volume)"/>
+<path d="M124 313 Q188 280 271 277" fill="none" stroke="url(#upper-light)" stroke-width="5" stroke-linecap="round"/>
+<path d="M277 347 Q290 299 351 278 Q392 259 416 246" fill="none" stroke="#839636" stroke-width="4"/>
+<!-- A flowing inset replaces the heavy triangular side graphic. -->
+<path d="M332 296 Q373 315 425 292 Q529 249 646 223 Q572 260 521 285 Q420 337 359 323 Q338 317 332 296Z" fill="#30392e"/>
+<path d="M346 302 Q382 316 431 295 Q537 249 624 231" fill="none" stroke="#808976" stroke-opacity=".65" stroke-width="2"/>
+<g stroke="#f5f5db" stroke-width="9" stroke-linecap="round"><path d="M330 244 L396 267"/><path d="M353 225 L420 246"/><path d="M376 206 L443 225"/><path d="M397 185 L465 205"/><path d="M419 167 L485 185"/></g>
+<g fill="#222b20"><circle cx="330" cy="244" r="3"/><circle cx="353" cy="225" r="3"/><circle cx="376" cy="206" r="3"/><circle cx="397" cy="185" r="3"/><circle cx="419" cy="167" r="3"/></g>
+<path d="M691 162 L681 118 Q681 109 694 110 L707 152" fill="none" stroke="#303b22" stroke-width="9"/>
+<path d="M707 260 L739 254 M710 271 L744 266 M714 282 L748 278" stroke="#5c6c30" stroke-width="3"/>
+<!-- Fine seams and woven lace highlights remain neutral across colorways. -->
+<path d="M648 221 Q686 238 720 216 Q733 240 743 271 Q754 295 755 312 Q728 330 695 328 Q684 294 674 270 Q664 244 648 221Z" class="shaded-panel"/>
+<path d="M648 221 Q686 238 720 216 Q733 240 743 271 Q754 295 755 312 Q728 330 695 328 Q684 294 674 270 Q664 244 648 221Z" fill="url(#panel-material)"/>
+<path d="M659 230 Q680 262 696 312 Q719 317 746 304" fill="none" stroke="#fffef0" stroke-opacity=".3" stroke-width="2"/>
+<g fill="none" stroke="#f4f3db" stroke-opacity=".65" stroke-width="1.4" stroke-dasharray="2 3"><path d="M125 328 Q183 285 297 276 L327 292 Q274 315 267 344"/><path d="M664 239Q687 279 701 319Q728 321 746 310"/><path d="M305 237 Q366 212 418 165L475 130"/></g>
+<g fill="none" stroke-linecap="round"><path d="M331 248L397 271M354 229L421 250M377 210L444 229M398 189L466 209M420 171L486 189" stroke="#303323" stroke-opacity=".3" stroke-width="5"/><path d="M330 242L396 265M353 223L420 244M376 204L443 223M397 183L465 203M419 165L485 183" stroke="#fffef3" stroke-width="3"/><path d="M330 244L396 267M353 225L420 246M376 206L443 225M397 185L465 205M419 167L485 185" stroke="url(#lace-weave)" stroke-width="7"/><path d="M447 179 Q421 133 403 153 Q394 172 447 179 Q477 142 490 156 Q500 171 447 179L421 222M447 179L481 214" stroke="#484d3c" stroke-opacity=".35" stroke-width="8"/><path d="M447 177 Q421 131 403 151 Q394 170 447 177 Q477 140 490 154 Q500 169 447 177L421 220M447 177L481 212" stroke="#eeefdf" stroke-width="5"/>
+<path d="M125 344Q221 381 374 366M546 339Q674 352 748 333" stroke="#fffef5" stroke-width="3"/><path d="M145 357L150 368M165 363L169 374M188 368L191 379M213 373L215 383M239 376L240 385M267 378L267 388M295 379L295 389M325 379L325 389M354 378L354 387" stroke="#b3b6a6" stroke-width="1.5"/></g>
+<g stroke="#697455" stroke-width="3"><path d="M155 385L152 398 M192 393L190 407 M231 399L230 415 M275 403L275 419 M321 405L321 420 M375 404L375 419 M427 402L428 416 M481 400L482 414 M735 380L740 390"/></g>
+</svg>
+<div class="art-label">BUILT TO STAND OUT. ↗</div>
+</div>
+<p class="intro">A little louder. A little lighter.<br>A fresh perspective on everyday movement. Step outside the ordinary.</p>
+<a class="cta" href="#details">Explore details <span aria-hidden="true">↗</span></a>
+<div class="hero-bottom"><div><div class="color-title">COLORWAY <strong id="color-label" aria-live="polite">Volt / Lime</strong></div><div class="swatches" role="group" aria-label="Choose sneaker colorway"><button class="swatch" style="--swatch:#dcf348" data-color="#dcf348" data-shade="#a2b72f" data-label="Volt / Lime" aria-label="Volt / Lime" aria-pressed="true"></button><button class="swatch" style="--swatch:#f39c78" data-color="#f39c78" data-shade="#bd6b50" data-label="Sunset / Clay" aria-label="Sunset / Clay" aria-pressed="false"></button><button class="swatch" style="--swatch:#b1c5ee" data-color="#b1c5ee" data-shade="#758fb6" data-label="Sky / Slate" aria-label="Sky / Slate" aria-pressed="false"></button></div></div><span class="serial">01 / THE AIR EDIT</span><a class="scroll-link" href="#details">KEEP EXPLORING <span aria-hidden="true">↓</span></a></div>
+</section>
+<div class="ticker" aria-hidden="true"><span>MOVE DIFFERENT.</span><b>✳</b><span>MAKE YOUR OWN WAY.</span><b>✳</b><span>EVERYDAY. ANYWHERE.</span><b>✳</b><span>MORE AIR. LESS ORDINARY.</span></div>
+<section class="details" id="details" aria-labelledby="details-title"><div class="details-heading"><div><div class="eyebrow">THE DESIGN LANGUAGE</div><h2 id="details-title">Good from every angle.</h2></div><p>Sport-inspired. Street-minded. An original design study in comfort, contrast, and unapologetic color.</p></div><div class="cards"><article class="card"><span class="card-num">01 / FEEL</span><span class="card-icon" aria-hidden="true">◎</span><h3>A lighter point of view.</h3><p>A sculpted, air-inspired sole gives the concept its floating silhouette. A visual ode to walking on a little more possibility.</p></article><article class="card"><span class="card-num">02 / FORM</span><span class="card-icon" aria-hidden="true">≋</span><h3>Texture meets attitude.</h3><p>Fine mesh, curved overlays, and a sculpted profile. Technical design cues, reimagined for the everyday.</p></article><article class="card"><span class="card-num">03 / EXPRESSION</span><span class="card-icon" aria-hidden="true">✳</span><h3>Your color. Your energy.</h3><p>Electric lime, warm clay, or cool slate. Try the colorway selector and find a shade that feels like you.</p></article></div></section>
+</main>
+<footer><a class="brand" href="#home">AIR / STUDIO</a><p>Unofficial concept advertisement. Original sneaker illustration inspired by Nike design culture. Not affiliated with or endorsed by Nike. This is a visual concept, not a product for sale.</p><a href="#home" aria-label="Back to top">BACK TO TOP ↑</a></footer>
+<script>
+const swatches = document.querySelectorAll('.swatch');
+swatches.forEach(button => {
+  button.addEventListener('click', () => {
+    document.documentElement.style.setProperty('--shoe', button.dataset.color);
+    document.documentElement.style.setProperty('--shoe-dark', button.dataset.shade);
+    document.getElementById('color-label').textContent = button.dataset.label;
+    document.getElementById('shoe-title').textContent = button.dataset.label + ' concept sneaker';
+    swatches.forEach(swatch => swatch.setAttribute('aria-pressed', String(swatch === button)));
+  });
+});
+</script>
+</body>
+</html>

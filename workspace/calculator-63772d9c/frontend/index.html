@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculator</title>
+<style>
+  body { font-family: system-ui, sans-serif; display: flex; justify-content: center; padding: 2rem; background: #f4f5f7; }
+  .calc { background: #fff; border-radius: 12px; padding: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,.1); width: 260px; }
+  .display { background: #222; color: #fff; font-size: 1.8rem; text-align: right; padding: .6rem .8rem; border-radius: 8px; min-height: 2.4rem; overflow-x: auto; }
+  .keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; margin-top: .8rem; }
+  button { font-size: 1.1rem; padding: .7rem 0; border: none; border-radius: 8px; background: #e8eaed; cursor: pointer; }
+  button:hover { background: #d8dbe0; }
+  button.op { background: #cfe3ff; }
+  button.eq { background: #2f6fed; color: #fff; }
+  button.clear { background: #ffd9d9; grid-column: span 2; }
+</style>
+</head>
+<body>
+  <div class="calc">
+    <div class="display" id="display">0</div>
+    <div class="keys">
+      <button class="clear" data-action="clear">Clear</button>
+      <button class="op" data-op="/">/</button>
+      <button class="op" data-op="*">*</button>
+      <button data-digit="7">7</button>
+      <button data-digit="8">8</button>
+      <button data-digit="9">9</button>
+      <button class="op" data-op="-">-</button>
+      <button data-digit="4">4</button>
+      <button data-digit="5">5</button>
+      <button data-digit="6">6</button>
+      <button class="op" data-op="+">+</button>
+      <button data-digit="1">1</button>
+      <button data-digit="2">2</button>
+      <button data-digit="3">3</button>
+      <button class="eq" data-action="equals">=</button>
+      <button data-digit="0">0</button>
+      <button data-digit=".">.</button>
+    </div>
+  </div>
+<script>
+  const display = document.getElementById('display');
+  let current = '0';      // digits typed for the current operand
+  let pending = null;     // stored left operand
+  let operator = null;    // pending operator
+  let fresh = true;       // next digit starts a new operand
+
+  function render(text) { display.textContent = text; }
+
+  function inputDigit(d) {
+    if (fresh) { current = d === '.' ? '0.' : d; fresh = false; }
+    else if (d === '.') { if (!current.includes('.')) current += '.'; }
+    else { current = current === '0' ? d : current + d; }
+    render(current);
+  }
+
+  function chooseOperator(op) {
+    if (operator !== null && !fresh) { if (!applyPending()) return; }
+    pending = parseFloat(current);
+    operator = op;
+    fresh = true;
+  }
+
+  function applyPending() {
+    const b = parseFloat(current);
+    if (operator === '/' && b === 0) { reset('Cannot divide by zero'); return false; }
+    let result;
+    if (operator === '+') result = pending + b;
+    else if (operator === '-') result = pending - b;
+    else if (operator === '*') result = pending * b;
+    else result = pending / b;
+    current = String(result);
+    render(current);
+    return true;
+  }
+
+  function equals() {
+    if (operator === null) return;
+    if (applyPending()) { pending = null; operator = null; fresh = true; }
+  }
+
+  function reset(message) {
+    current = '0'; pending = null; operator = null; fresh = true;
+    render(message || '0');
+  }
+
+  document.querySelectorAll('button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (btn.dataset.digit !== undefined) inputDigit(btn.dataset.digit);
+      else if (btn.dataset.op !== undefined) chooseOperator(btn.dataset.op);
+      else if (btn.dataset.action === 'equals') equals();
+      else if (btn.dataset.action === 'clear') reset();
+    });
+  });
+</script>
+</body>
+</html>

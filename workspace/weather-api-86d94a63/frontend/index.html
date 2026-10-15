@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Weather Forecast Demo</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background: linear-gradient(160deg, #1e3a8a, #0ea5e9);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+    color: #0f172a;
+  }
+  main {
+    width: 100%;
+    max-width: 520px;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.75rem;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.35);
+  }
+  h1 { margin: 0 0 0.25rem; font-size: 1.5rem; }
+  .subtitle { margin: 0 0 1.25rem; color: #475569; font-size: 0.9rem; }
+  form { display: flex; gap: 0.5rem; }
+  input[type="text"] {
+    flex: 1;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 1rem;
+  }
+  input[type="text"]:focus { outline: 2px solid #0ea5e9; border-color: #0ea5e9; }
+  button {
+    padding: 0.7rem 1.1rem;
+    border: none;
+    border-radius: 10px;
+    background: #0ea5e9;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.6; cursor: not-allowed; }
+  .error {
+    margin-top: 1rem;
+    padding: 0.7rem 0.85rem;
+    border-radius: 10px;
+    background: #fee2e2;
+    color: #991b1b;
+    font-size: 0.9rem;
+  }
+  .loading { margin-top: 1rem; color: #475569; font-size: 0.9rem; }
+  .card {
+    margin-top: 1.25rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 1.1rem;
+    background: #f8fafc;
+  }
+  .card h2 { margin: 0 0 0.75rem; font-size: 1.15rem; }
+  .temp { font-size: 2.4rem; font-weight: 700; margin: 0 0 0.25rem; }
+  .condition { font-size: 1.05rem; color: #0369a1; margin: 0 0 0.9rem; }
+  .metrics { display: flex; gap: 1.5rem; font-size: 0.95rem; }
+  .metrics span { display: block; color: #64748b; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .disclaimer {
+    margin-top: 1rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 10px;
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 0.82rem;
+  }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Weather Forecast</h1>
+  <p class="subtitle">Enter a city or location to see its forecast.</p>
+
+  <form id="forecast-form">
+    <input id="location-input" type="text" name="location" placeholder="e.g. London" autocomplete="off" />
+    <button id="submit-button" type="submit">Get forecast</button>
+  </form>
+
+  <p id="error" class="error hidden" role="alert"></p>
+  <p id="loading" class="loading hidden">Loading forecast&hellip;</p>
+
+  <section id="result" class="card hidden" aria-live="polite">
+    <h2 id="result-location"></h2>
+    <p id="result-temp" class="temp"></p>
+    <p id="result-condition" class="condition"></p>
+    <div class="metrics">
+      <div><span>Humidity</span><strong id="result-humidity"></strong></div>
+      <div><span>Wind</span><strong id="result-wind"></strong></div>
+    </div>
+    <p class="disclaimer" id="result-disclaimer"></p>
+  </section>
+</main>
+
+<script>
+  const form = document.getElementById('forecast-form');
+  const input = document.getElementById('location-input');
+  const button = document.getElementById('submit-button');
+  const errorBox = document.getElementById('error');
+  const loadingBox = document.getElementById('loading');
+  const resultBox = document.getElementById('result');
+
+  const MAX_LENGTH = 100;
+
+  function showError(message) {
+    errorBox.textContent = message;
+    errorBox.classList.remove('hidden');
+    resultBox.classList.add('hidden');
+  }
+
+  function clearError() {
+    errorBox.textContent = '';
+    errorBox.classList.add('hidden');
+  }
+
+  function renderForecast(data) {
+    document.getElementById('result-location').textContent = data.location;
+    document.getElementById('result-temp').textContent = data.temperature + ' \u00b0C';
+    document.getElementById('result-condition').textContent = data.condition;
+    document.getElementById('result-humidity').textContent = data.humidity + ' %';
+    document.getElementById('result-wind').textContent = data.wind + ' km/h';
+    document.getElementById('result-disclaimer').textContent =
+      data.disclaimer || 'Simulated demo forecast - not real weather data.';
+    resultBox.classList.remove('hidden');
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearError();
+
+    const location = input.value.trim();
+    if (!location) {
+      showError('Please enter a location or city name.');
+      return;
+    }
+    if (location.length > MAX_LENGTH) {
+      showError('Location must be ' + MAX_LENGTH + ' characters or fewer.');
+      return;
+    }
+
+    loadingBox.classList.remove('hidden');
+    button.disabled = true;
+    resultBox.classList.add('hidden');
+
+    try {
+      const response = await fetch('/api/forecast?location=' + encodeURIComponent(location));
+      const data = await response.json();
+      if (!response.ok) {
+        showError(data.error || 'Could not fetch the forecast.');
+        return;
+      }
+      renderForecast(data);
+    } catch (err) {
+      showError('Network error. Please try again.');
+    } finally {
+      loadingBox.classList.add('hidden');
+      button.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

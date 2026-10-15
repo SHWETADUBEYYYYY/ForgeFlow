@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juniper Books - Home</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Juniper Books</a>
+            <div class="nav-links">
+                <a href="/cart">Cart (<span id="cart-count">0</span>)</a>
+                <span id="auth-links">
+                    <a href="/login">Login</a>
+                    <a href="/register">Register</a>
+                </span>
+                <span id="user-info" style="display: none;">
+                    Welcome, <span id="username-display"></span>! <button id="logout-button">Logout</button>
+                </span>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <h1>Our Books</h1>
+        <div id="product-list" class="product-grid"></div>
+    </main>
+    <footer>
+        <p>&copy; 2023 Juniper Books</p>
+    </footer>
+    <script src="/static/js/utils.js"></script>
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/products.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - Juniper Books</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Juniper Books</a>
+            <div class="nav-links">
+                <a href="/" class="nav-item">Products</a>
+                <a href="/cart" class="nav-item">Cart</a>
+                <a href="/orders" class="nav-item">Orders</a>
+                <div id="auth-links">
+                    <a href="/login" class="nav-item">Login</a>
+                    <a href="/register" class="nav-item">Register</a>
+                </div>
+                <button id="logout-button" class="nav-item" style="display: none;">Logout</button>
+            </div>
+        </nav>
+    </header>
+    <main class="container">
+        <section class="error-section">
+            <h1>Error {{ status_code }}</h1>
+            <p>{{ message }}</p>
+            <p>Something went wrong. Please try again or go back to the <a href="/">homepage</a>.</p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 Juniper Books</p>
+    </footer>
+    <script src="/static/js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAuthLinks();
+        });
+    </script>
+</body>
+</html>

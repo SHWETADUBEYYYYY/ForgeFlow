@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Appointment Requests — {{ clinic_name }}</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">A</span>
+        <span class="brand-name">{{ clinic_name }}</span>
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="siteNav">
+        <a href="/admin">Dashboard</a>
+        <a href="/">Public Site</a>
+        <span class="nav-user">Signed in as {{ username }}</span>
+        <a class="nav-cta" href="/logout">Log Out</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <h1 class="section-title">Appointment Requests</h1>
+      <p class="section-sub">
+        {{ appointments|length }} request{{ '' if appointments|length == 1 else 's' }} received.
+        Update the status as you follow up with each patient.
+      </p>
+
+      {% if appointments %}
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Patient</th>
+              <th>Contact</th>
+              <th>Preferred</th>
+              <th>Message</th>
+              <th>Status</th>
+              <th>Received</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in appointments %}
+            <tr>
+              <td data-label="Patient">{{ a.name }}</td>
+              <td data-label="Contact">
+                <a href="mailto:{{ a.email }}">{{ a.email }}</a><br />
+                <span class="muted">{{ a.phone }}</span>
+              </td>
+              <td data-label="Preferred">
+                {{ a.preferred_date }}{% if a.preferred_time %}<br /><span class="muted">{{ a.preferred_time }}</span>{% endif %}
+              </td>
+              <td data-label="Message" class="message-cell">{{ a.message or '—' }}</td>
+              <td data-label="Status"><span class="badge badge-{{ a.status }}">{{ a.status }}</span></td>
+              <td data-label="Received" class="muted">{{ a.created_at }}</td>
+              <td data-label="Action">
+                <form method="post" action="/admin/appointments/{{ a.id }}/status" class="status-form">
+                  <select name="status" aria-label="Update status for {{ a.name }}">
+                    <option value="new" {% if a.status == 'new' %}selected{% endif %}>New</option>
+                    <option value="contacted" {% if a.status == 'contacted' %}selected{% endif %}>Contacted</option>
+                    <option value="closed" {% if a.status == 'closed' %}selected{% endif %}>Closed</option>
+                  </select>
+                  <button type="submit" class="btn btn-small">Save</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <p>No appointment requests yet. New requests from the public site will appear here.</p>
+      </div>
+      {% endif %}
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; {{ clinic_name }}. Staff portal.</p>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

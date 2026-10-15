@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Soundroom · Music player</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#10141e;color:#eef1fc}*{box-sizing:border-box}body{margin:0}main{max-width:860px;margin:64px auto;padding:0 24px}header{display:flex;justify-content:space-between;align-items:center;gap:20px}h1{font-size:34px;letter-spacing:-1px;margin:6px 0}p{color:#aab4cb;line-height:1.6}.eyebrow{color:#b5a4ff;font-size:12px;letter-spacing:3px;text-transform:uppercase}button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:12px 18px;background:#baafff;color:#18152c;font-weight:650}button:hover{background:#d0c8ff}button:focus-visible{outline:3px solid #fff;outline-offset:3px}button:disabled{opacity:.6;cursor:wait}.panel{background:#1a2130;border:1px solid #303a50;border-radius:18px;padding:24px;margin-top:28px}h2{font-size:18px;margin:0}.library-heading{display:flex;justify-content:space-between;align-items:center}#count{color:#aab4cb;font-size:13px}ul{padding:0;list-style:none;margin-bottom:0}li+li{border-top:1px solid #303a50}.track{width:100%;background:transparent;color:#eef1fc;display:flex;gap:14px;text-align:left;align-items:center;font-weight:400;padding:16px 10px}.track:hover{background:#252e43}.track[aria-current="true"]{background:#302d48;color:#d0c8ff}.track span:last-child{overflow-wrap:anywhere}.note{color:#b5a4ff;font-size:22px}#current{font-size:22px;color:#eef1fc;margin:10px 0 22px;overflow-wrap:anywhere}audio{width:100%}#error{color:#ffb1b1}#status{min-height:24px;font-size:14px;margin-bottom:0}#empty{text-align:center;padding:28px 0}footer{font-size:12px;color:#8995ad;margin:20px 0}@media(max-width:540px){main{margin-top:28px}header{align-items:flex-start;flex-direction:column}.panel{padding:18px}}
+</style>
+</head>
+<body>
+<main>
+<header><div><div class="eyebrow">Your personal listening space</div><h1>Soundroom</h1><p>Add your music. Make yourself at home.</p></div><button id="add" type="button">＋ Add Music</button></header>
+<input type="file" id="files" accept=".mp3,.wav,.ogg" multiple hidden>
+<p id="status" role="status" aria-live="polite"></p><p id="error" role="alert" hidden></p>
+<section class="panel" aria-labelledby="library-title"><div class="library-heading"><h2 id="library-title">Your library</h2><span id="count">0 tracks</span></div><p id="empty">No music yet. Select Add Music to upload MP3, WAV, or OGG files.<br>Up to 50 MB per track.</p><ul id="tracks"></ul></section>
+<section class="panel" aria-label="Music player"><div class="eyebrow">Now playing</div><p id="current">Choose a track to start listening</p><audio id="player" controls preload="metadata"></audio></section>
+<footer>Stored on this server · No automatic playback on refresh · MP3 / WAV / OGG</footer>
+</main>
+<script>
+const add = document.querySelector('#add');
+const files = document.querySelector('#files');
+const player = document.querySelector('#player');
+const status = document.querySelector('#status');
+const error = document.querySelector('#error');
+const list = document.querySelector('#tracks');
+let selectedId = null;
+function showError(message) { error.textContent = message; error.hidden = false; }
+async function responseData(response) {
+  const data = await response.json();
+  if (!response.ok) throw new Error(typeof data.detail === 'string' ? data.detail : 'The request failed. Please try again.');
+  return data;
+}
+async function refreshLibrary() {
+  const tracks = await responseData(await fetch('/api/tracks'));
+  list.replaceChildren();
+  document.querySelector('#empty').hidden = tracks.length > 0;
+  document.querySelector('#count').textContent = `${tracks.length} track${tracks.length === 1 ? '' : 's'}`;
+  for (const track of tracks) {
+    const item = document.createElement('li');
+    const button = document.createElement('button');
+    button.className = 'track';
+    button.setAttribute('aria-current', String(track.id === selectedId));
+    const icon = document.createElement('span');
+    icon.className = 'note'; icon.textContent = '♪'; icon.setAttribute('aria-hidden', 'true');
+    const name = document.createElement('span'); name.textContent = track.name;
+    button.append(icon, name);
+    button.addEventListener('click', () => {
+      error.hidden = true;
+      player.pause();
+      selectedId = track.id;
+      for (const other of list.querySelectorAll('button')) other.setAttribute('aria-current', String(other === button));
+      document.querySelector('#current').textContent = track.name;
+      player.src = `/api/tracks/${track.id}/audio`;
+      player.load();
+      player.play().catch(() => showError('Playback could not start. Use the play control, or try another audio file.'));
+    });
+    item.append(button); list.append(item);
+  }
+}
+add.addEventListener('click', () => files.click());
+files.addEventListener('change', async () => {
+  const chosen = Array.from(files.files);
+  if (!chosen.length) return;
+  add.disabled = true; error.hidden = true;
+  let uploaded = 0;
+  const failures = [];
+  for (const file of chosen) {
+    status.textContent = `Uploading ${file.name}…`;
+    try {
+      if (file.size > 50 * 1024 * 1024) throw new Error('Each file must be 50 MB or smaller.');
+      const body = new FormData(); body.append('file', file);
+      await responseData(await fetch('/api/tracks', {method: 'POST', body}));
+      uploaded++;
+    } catch (failure) { failures.push(`${file.name}: ${failure.message}`); }
+  }
+  try { await refreshLibrary(); } catch (failure) { failures.push(`Could not refresh library: ${failure.message}`); }
+  status.textContent = `${uploaded} track${uploaded === 1 ? '' : 's'} added.`;
+  if (failures.length) showError(failures.join(' '));
+  files.value = ''; add.disabled = false;
+});
+player.addEventListener('error', () => showError('This track could not be played. It may be unavailable or not a valid audio file supported by your browser.'));
+refreshLibrary().catch(() => showError('Could not load your library. Refresh the page to try again.'));
+</script>
+</body>
+</html>
